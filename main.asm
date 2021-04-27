@@ -4,7 +4,7 @@ INCLUDE Irvine32.inc
 ground BYTE "------------------------------------------------------------------------------------------------------------------------", 0
 
 xPos BYTE 16
-yPos BYTE 10
+yPos BYTE 
 
 inputChar BYTE ?
 
@@ -20,6 +20,23 @@ main PROC
 	call DrawPlayer
 
 	gameLoop:
+		; Gravity logic
+		gravity:
+			cmp yPos, 28
+			jge onGround
+
+			; Make player fall
+			call ClearPlayer
+			inc yPos
+			call DrawPlayer
+
+			mov eax, 80
+			call Delay
+			jmp gravity
+
+		onGround:
+
+
 		; Get user input key char
 		call ReadChar
 		mov inputChar, al
@@ -43,9 +60,16 @@ main PROC
 		jmp gameLoop
 
 		moveUp:
-			call ClearPlayer
-			dec yPos
-			call DrawPlayer
+			; Allow player to jump
+			mov ecx, 3
+			jumpLoop:
+				call ClearPlayer
+				dec yPos
+				call DrawPlayer
+				mov eax, 15
+				call Delay
+
+			loop jumpLoop
 			jmp gameLoop
 
 		moveDown:
