@@ -1,12 +1,19 @@
 INCLUDE Irvine32.inc
 
+.data
+ground BYTE "------------------------------------------------------------------------------------------------------------------------", 0
+
 .code
 main PROC
-	mov eax, 1000h
-	mov ebx, 2000h
-	mov ecx, 3000h
+	; draw ground (0, 29)
+	mov dl, 0
+	mov dh, 29
+	call Gotoxy
+	mov edx, OFFSET ground
+	call WriteString
 
-	call DumpRegs
+	call ReadChar
 	exit
 main ENDP
+
 END main
