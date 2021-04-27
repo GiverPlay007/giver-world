@@ -6,6 +6,8 @@ ground BYTE "-------------------------------------------------------------------
 xPos BYTE 16
 yPos BYTE 10
 
+inputChar BYTE ?
+
 .code
 main PROC
 	; Draw ground (0, 29)
@@ -17,8 +19,18 @@ main PROC
 
 	call DrawPlayer
 
-	call ReadChar
-	exit
+	gameLoop:
+		; Get user input key char
+		call ReadChar
+		mov inputChar, al
+
+		; Exit game if user types x
+		cmp inputChar, "x"
+		je exitGame
+	jmp gameLoop
+
+	exitGame:
+		exit
 main ENDP
 
 DrawPlayer PROC
