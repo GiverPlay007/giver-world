@@ -3,8 +3,14 @@ INCLUDE Irvine32.inc
 .data
 ground BYTE "------------------------------------------------------------------------------------------------------------------------", 0
 
+strScore BYTE "Score: ", 0
+score BYTE 0
+
 xPos BYTE 16
-yPos BYTE 
+yPos BYTE 20
+
+xCoinPos BYTE ?
+yCoinPos BYTE ?
 
 inputChar BYTE ?
 
@@ -18,8 +24,39 @@ main PROC
 	call WriteString
 
 	call DrawPlayer
+	
+	call CreateRandomCoin
+	call DrawCoin
+
+	call Randomize
 
 	gameLoop:
+		; Check if is colliding with the coin
+		mov bl, xPos
+		cmp bl, xCoinPos
+		jne notCollecting
+		mov bl, yPos
+		cmp bl, yCoinPos
+		jne notCollecting
+		; Collect the coin
+		inc score
+		call CreateRandomCoin
+		call DrawCoin
+
+		notCollecting:
+			; Clear text color
+			mov eax, white (black * 16)
+			call SetTextColor
+
+			; Draw score
+			mov dl, 0
+			mov dh, 0
+			call Gotoxy
+			mov edx, OFFSET strScore
+			call WriteString
+			mov al, score
+			add al, '0'
+			call WriteChar
 		; Gravity logic
 		gravity:
 			cmp yPos, 28
@@ -35,8 +72,6 @@ main PROC
 			jmp gravity
 
 		onGround:
-
-
 		; Get user input key char
 		call ReadChar
 		mov inputChar, al
@@ -61,12 +96,12 @@ main PROC
 
 		moveUp:
 			; Allow player to jump
-			mov ecx, 3
+			mov ecx, 1
 			jumpLoop:
 				call ClearPlayer
 				dec yPos
 				call DrawPlayer
-				mov eax, 15
+				mov eax, 50
 				call Delay
 
 			loop jumpLoop
@@ -115,5 +150,25 @@ ClearPlayer PROC
 	call WriteChar
 	ret
 ClearPlayer ENDP
+
+DrawCoin PROC
+	mov eax, yellow (yellow * 16)
+	call SetTextColor
+	mov dl, xCoinPos
+	mov dh, yCoinPos
+	call Gotoxy
+	mov al, "O"
+	call WriteChar
+	ret
+DrawCoin ENDP
+
+CreateRandomCoin PROC
+	mov eax, 35
+	inc eax
+	call RandomRange
+	mov xCoinPos, al
+	mov yCoinPos, 27
+	ret
+CreateRandomCoin ENDP
 
 END main
