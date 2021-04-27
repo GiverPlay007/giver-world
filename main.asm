@@ -43,21 +43,25 @@ main PROC
 		jmp gameLoop
 
 		moveUp:
+			call ClearPlayer
 			dec yPos
 			call DrawPlayer
 			jmp gameLoop
 
 		moveDown:
+			call ClearPlayer
 			inc yPos
 			call DrawPlayer
 			jmp gameLoop
 
 		moveLeft:
+			call ClearPlayer
 			dec xPos
 			call DrawPlayer
 			jmp gameLoop
 
 		moveRight:
+			call ClearPlayer
 			inc xPos
 			call DrawPlayer
 			jmp gameLoop
@@ -77,5 +81,15 @@ DrawPlayer PROC
 	call WriteChar
 	ret
 DrawPlayer ENDP
+
+ClearPlayer PROC
+	; Remove player from current position
+	mov dl, xPos
+	mov dh, yPos
+	call Gotoxy
+	mov al, " "
+	call WriteChar
+	ret
+ClearPlayer ENDP
 
 END main
